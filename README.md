@@ -10,6 +10,8 @@
 # Features
 
 - **Поддержка Браавос и Аргент**
+- **Герератор кошельков вместе с сид фразами**
+- **Вывод адресов из приватных ключей**
 
 ### Settings
 
@@ -21,12 +23,14 @@ provider = "argent" # argent или braavos
 TaskSleep = [10, 20] # задержка между поисками балансов
 ErrorSleepeng = [10, 20] # задержка при ошибке
 ThreadRunnerSleep = [10, 20] # задержка между кошельками
+amount_to_create = 10 # сколько кошельков создавать
 
 ~~~
 
 Чтобы начать работу:
  - Загрузи приватники в файл secrets.txt
  - Выбери нужный тебе провайдер
+ - запусти main.py
 
 ### How to run script
 1. Устанавливаем Python: https://www.python.org/downloads/, я использую версию 3.9.8
@@ -42,6 +46,11 @@ cd /d Директория
 6. Прописываем:
 pip install -r requirements.txt
 7. После установки всех библиотек командой выше, запускаем софт:
-python main.py
+Для деплоера:
+ python main.py
+Для генератора:
+ python generator.py
+Для вывода адресов:
+ python address_from_keys.py
 
 Скрипт запустился.
