@@ -10,4 +10,3 @@ pycrypto
 pycryptodome
 base58
 mnemonic
-mod
