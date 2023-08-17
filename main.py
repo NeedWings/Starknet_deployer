@@ -77,19 +77,12 @@ try:
                 await sleeping('0x' + '0'*(66-len(hex(account.address))) + hex(account.address)[2::], True)
         logger.error(f"[{'0x' + '0'*(66-len(hex(account.address))) + hex(account.address)[2::]}] already deploying")
         return -1
-
-    def transform_keys(keys):
-        res = []
-        for key in keys:
-            try:
-                try:
-                    res.append(int(key))
-                except:
-                    res.append(int(key, 16))
-            except Exception as e:
-                logger.error(f"can't read key with following error: {e}")
-        
-        return res
+    
+    
+    
+    
+    
+    
 
     def main():
         with open("secrets.txt", "r") as f:

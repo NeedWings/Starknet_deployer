@@ -1,5 +1,6 @@
 import random
 import asyncio
+import hashlib
 from loguru import logger
 from starknet_py.hash.address import compute_address
 from starknet_py.net.account.account import Account
@@ -225,6 +226,18 @@ async def deploy_account_braavos(
     return AccountDeploymentResult(
         hash=result.transaction_hash, account=account, _client=account.client
     )
+def transform_keys(keys):
+    res = []
+    for key in keys:
+        try:
+            try:
+                res.append(int(key))
+            except:
+                res.append(int(key, 16))
+        except Exception as e:
+            logger.error(f"can't read key with following error: {e}")
+    
+    return res
 
 def get_braavos_addr_from_private_key(private_key):
     class_hash = 0x03131fa018d520a037686ce3efddeab8f28895662f019ca3ca18a626650f7d1e
