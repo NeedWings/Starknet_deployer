@@ -4,7 +4,7 @@
 
 **Приобрести бота на ZkSync / LayerZero / Starknet можно тут: https://t.me/swipersoft_bot**
 
-**DEV           : https://t.me/NeedWings**
+**DEV           : https://t.me/WingedGarage**
 
 
 # Features
