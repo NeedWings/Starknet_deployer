@@ -45,12 +45,15 @@ cd /d Директория
 * Директория - путь к папке, где лежит скрипт (само название скрипта писать не нужно)
 6. Прописываем:
 pip install -r requirements.txt
-7. После установки всех библиотек командой выше, запускаем софт:\n
+7. После установки всех библиотек командой выше, запускаем софт:
+
 Для деплоера:
- python main.py
+python main.py
+
 Для генератора:
- python generator.py
+python generator.py
+
 Для вывода адресов:
- python address_from_keys.py
+python address_from_keys.py
 
 Скрипт запустился.
