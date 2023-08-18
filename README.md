@@ -50,8 +50,9 @@ pip install -r requirements.txt
 Для деплоера:
 python main.py
 
-Для генератора:
-python generator.py
+Для генератора(Кошельки будут в файле wallets.csv):
+python generator.py        
+
 
 Для вывода адресов:
 python address_from_keys.py
