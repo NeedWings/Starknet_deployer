@@ -58,7 +58,7 @@ try:
                         client=account.client,
                         chain=chain,
                         constructor_calldata=call_data,
-                        max_fee=int(55e13),
+                        auto_estimate=True,
                     )
                 else:
                     logger.error(f"Selected unsupported wallet provider: {provider}. Please select one of this: argent, braavos")

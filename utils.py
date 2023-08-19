@@ -1,6 +1,7 @@
 import random
 import asyncio
 import hashlib
+import dataclasses
 from loguru import logger
 from starknet_py.hash.address import compute_address
 from starknet_py.net.account.account import Account
@@ -18,6 +19,7 @@ from starknet_py.net.models.transaction import (
     AccountTransaction,
     Declare,
     DeclareV2,
+    
     DeployAccount,
     Invoke,
 )
@@ -31,7 +33,7 @@ from starknet_py.hash.transaction import (
     compute_transaction_hash,
 )
 from config import *
-
+from starknet_py.net.client_models import EstimatedFee
 from starknet_py.net.account.account import _add_max_fee_to_transaction, _add_signature_to_transaction
 from starknet_py.hash.utils import compute_hash_on_elements
 
@@ -119,6 +121,51 @@ def import_stark_account(private_key: int, client):
 
     return account, call_data, salt, class_hash
 
+async def sign_for_fee_estimate_braavos(
+    provider, transaction
+):
+    version = transaction.version + 2**128
+    transaction = dataclasses.replace(transaction, version=version)
+    signature = sign_transaction_braavos(transaction, provider.signer.private_key)
+    return _add_signature_to_transaction(tx=transaction, signature=signature)
+
+async def _estimate_fee_braavos(
+    provider,
+    tx: AccountTransaction,
+    block_hash = None,
+    block_number = None,
+):
+    """
+    :param tx: Transaction which fee we want to calculate.
+    :param block_hash: a block hash.
+    :param block_number: a block number.
+    :return: Estimated fee.
+    """
+    tx = await sign_for_fee_estimate_braavos(provider, tx)
+    estimated_fee = await provider._client.estimate_fee(
+        tx=tx,
+        block_hash=block_hash,
+        block_number=block_number,
+    )
+    assert isinstance(estimated_fee, EstimatedFee)
+    return estimated_fee
+
+async def _get_max_fee_braavos_deploy(provider: Account, transaction, max_fee, auto_estimate):
+    if auto_estimate and max_fee is not None:
+        raise ValueError(
+            "Arguments max_fee and auto_estimate are mutually exclusive."
+        )
+    
+    if auto_estimate:
+        estimated_fee = await _estimate_fee_braavos(provider, transaction)
+        max_fee = int(estimated_fee.overall_fee * Account.ESTIMATED_FEE_MULTIPLIER)
+    
+    if max_fee is None:
+        raise ValueError(
+            "Argument max_fee must be specified when invoking a transaction."
+        )
+    return max_fee
+
 
 async def sign_deploy_account_transaction_braavos(
     class_hash: int,
@@ -128,7 +175,7 @@ async def sign_deploy_account_transaction_braavos(
         nonce: int = 0,
         max_fee: Optional[int] = None,
         auto_estimate: bool = False,
-        signer: BaseSigner
+        signer: Account
     ) -> DeployAccount:
     constructor_calldata = constructor_calldata or []
 
@@ -141,9 +188,11 @@ async def sign_deploy_account_transaction_braavos(
         signature=[],
         nonce=nonce,
     )
-
+    max_fee = await _get_max_fee_braavos_deploy(
+            provider=signer, transaction=deploy_account_tx, max_fee=max_fee, auto_estimate=auto_estimate
+        )
     deploy_account_tx = _add_max_fee_to_transaction(deploy_account_tx, max_fee)
-    signature = sign_transaction_braavos(deploy_account_tx, signer.private_key)
+    signature = sign_transaction_braavos(deploy_account_tx, signer.signer.private_key)
     return _add_signature_to_transaction(deploy_account_tx, signature)
 
 
@@ -208,7 +257,7 @@ async def deploy_account_braavos(
         nonce=nonce,
         max_fee=max_fee,
         auto_estimate=auto_estimate,
-        signer=account.signer
+        signer=account
     )
     if chain in (
         StarknetChainId.TESTNET,
