@@ -11,6 +11,7 @@ try:
         print("keys: ")
         for key in keys:
             print(hex(key))
+        print("addresses: ")
         for key in keys:
             account, call_data, salt, class_hash = import_stark_account(key, client)
             print(hex(account.address))
