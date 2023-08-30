@@ -14,7 +14,7 @@ try:
         print("addresses: ")
         for key in keys:
             account, call_data, salt, class_hash = import_stark_account(key, client)
-            print(hex(account.address))
+            print('0x' + '0'*(66-len(hex(account.address))) + hex(account.address)[2::])
 
     if __name__ == "__main__":
         main()
