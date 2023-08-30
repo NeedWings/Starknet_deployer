@@ -4,18 +4,20 @@ from SeedPhraseHelper.crypto import HDPrivateKey, HDKey
 from config import *
 client = GatewayClient(MAINNET)
 
-def arrayify(hexStringOrBigNumberOrArrayish):
+def arrayify(hex_v):
     try:
-        value = int(hexStringOrBigNumberOrArrayish)
+        hex_v = hex(hex_v)
     except:
-        value = int(hexStringOrBigNumberOrArrayish, 16)
-    if value == 0:
-        return [0]
-    
-    hex_v = hex(value)[2::]
-
+        pass
+    try:
+        if hex_v[1] == "x":
+            hex_v = hex_v[2::]
+    except:
+        pass
     if len(hex_v) % 2 != 0:
         hex_v = "0" + hex_v
+    if hex_v == "00":
+        return [0]
     
     result = []
 
@@ -43,7 +45,6 @@ def get_payload_hash(payload):
 
 def hash_key_with_index(key, index):
     payload = concat(arrayify(key), arrayify(index))
-
     payload_hash = get_payload_hash(payload)
     return(int(payload_hash, 16))
 
@@ -74,15 +75,15 @@ def get_argent_key_from_phrase(mnemonic):
     acct_priv_key = root_keys[-1]
 
     keys = HDKey.from_path(acct_priv_key,'0/0')
-    eth_key = keys[-1]._key.to_hex()
-
+    eth_key = hex(int(keys[-1]._key.to_hex(), 16))[2::]
+    if len(eth_key) % 2 == 1:
+        eth_key = "0"+eth_key
     master_key = HDPrivateKey.master_key_from_seed(eth_key)
 
     root_keys = HDKey.from_path(master_key,"m/44'/9004'/0'/0/0")
 
+
     private_key = grid_key(root_keys[-1]._key.to_hex())
-    
-    "0x0744ab616c300fe4969991abda18bb78b5135f225b9024ce007a4645cc1acafe"
 
     return private_key
 
@@ -117,6 +118,7 @@ def main():
     res = "seed phrase;private key\n"
     for i in range(amount_to_create):
         master_key, mnemonic = HDPrivateKey.master_key_from_entropy()
+        
         if provider.lower() == "argent":
             private_key = get_argent_key_from_phrase(mnemonic)
         else:
