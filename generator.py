@@ -103,6 +103,8 @@ def EIP2645Hashing(key0):
 
         if key < N_minus_n:
             return hex(key % starkCurveOrder)
+        i+=1
+    
 
 
 def get_braavos_key_from_phrase(mnemonic):
