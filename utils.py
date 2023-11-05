@@ -68,6 +68,18 @@ def import_stark_account(private_key: int, client):
             len(account_initialize_call_data),
             *account_initialize_call_data
         ]
+    elif SETTINGS["Provider"].lower() == "argent_newest":
+        class_hash = 0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003
+
+        key_pair = KeyPair.from_private_key(private_key)
+        salt = key_pair.public_key
+
+
+        account_initialize_call_data = [key_pair.public_key, 0]
+
+        call_data = [
+            *account_initialize_call_data
+        ]
     elif provider == "braavos":
         class_hash = 0x03131fa018d520a037686ce3efddeab8f28895662f019ca3ca18a626650f7d1e
         key_pair = KeyPair.from_private_key(private_key)
@@ -105,7 +117,7 @@ def import_stark_account(private_key: int, client):
             *account_initialize_call_data
         ]
     else:
-        logger.error(f"Selected unsupported wallet provider: {provider}. Please select one of this: argent, braavos")
+        logger.error(f"Selected unsupported wallet provider: {provider}. Please select one of this: argent, argent_newest, braavos")
         return
     address = compute_address(
         salt=salt,
