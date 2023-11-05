@@ -38,7 +38,7 @@ try:
             i += 1
             try:
                 
-                if provider == "argent":
+                if provider == "argent" or provider == "argent_newest":
                     account_deployment_result = await Account.deploy_account(
                         address=account.address,
                         class_hash=class_hash,
