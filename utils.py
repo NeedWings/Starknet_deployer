@@ -68,7 +68,7 @@ def import_stark_account(private_key: int, client):
             len(account_initialize_call_data),
             *account_initialize_call_data
         ]
-    elif SETTINGS["Provider"].lower() == "argent_newest":
+    elif provider == "argent_newest":
         class_hash = 0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003
 
         key_pair = KeyPair.from_private_key(private_key)
